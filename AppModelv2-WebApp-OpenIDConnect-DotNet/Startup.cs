@@ -47,14 +47,32 @@ namespace AppModelv2_WebApp_OpenIDConnect_DotNet
                 PostLogoutRedirectUri = redirectUri,
                 Scope = OpenIdConnectScope.OpenIdProfile,
                 // ResponseType is set to request the code id_token - which contains basic information about the signed-in user
-                ResponseType = OpenIdConnectResponseType.CodeIdToken,
+                ResponseType = OpenIdConnectResponseType.IdTokenToken,
+                SaveTokens = true,
+                MetadataAddress = "https://login.microsoftonline.com/337ed392-6aa5-43c7-aaa7-b8b08571ac4f/v2.0/.well-known/openid-configuration",
                 // OpenIdConnectAuthenticationNotifications configures OWIN to send notification of failed authentications to OnAuthenticationFailed method
                 Notifications = new OpenIdConnectAuthenticationNotifications
                 {
-                    AuthenticationFailed = OnAuthenticationFailed
+                    AuthenticationFailed = OnAuthenticationFailed,
+                    TokenResponseReceived = OnTokenResponseReceived,
+                    SecurityTokenValidated = OnSecurityTokenValidated
+
                 }
             }
         );
+        }
+
+        private Task OnSecurityTokenValidated(SecurityTokenValidatedNotification<OpenIdConnectMessage, OpenIdConnectAuthenticationOptions> arg)
+        {
+            Console.WriteLine(arg.OwinContext.Authentication.ToString());
+            return Task.FromResult(0);
+        }
+
+        private Task OnTokenResponseReceived(TokenResponseReceivedNotification arg)
+        {
+
+            Console.WriteLine(arg.OwinContext.Authentication.ToString());
+            return Task.FromResult(0);
         }
 
         /// <summary>
