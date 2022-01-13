@@ -49,7 +49,6 @@ namespace AppModelv2_WebApp_OpenIDConnect_DotNet
                 // ResponseType is set to request the code id_token - which contains basic information about the signed-in user
                 ResponseType = OpenIdConnectResponseType.IdTokenToken,
                 SaveTokens = true,
-                MetadataAddress = "https://login.microsoftonline.com/337ed392-6aa5-43c7-aaa7-b8b08571ac4f/v2.0/.well-known/openid-configuration",
                 // OpenIdConnectAuthenticationNotifications configures OWIN to send notification of failed authentications to OnAuthenticationFailed method
                 Notifications = new OpenIdConnectAuthenticationNotifications
                 {
