@@ -1,4 +1,8 @@
-﻿using System.Web.Mvc;
+﻿using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
 
 namespace AppModelv2_WebApp_OpenIDConnect_DotNet.Controllers
 {
@@ -13,6 +17,16 @@ namespace AppModelv2_WebApp_OpenIDConnect_DotNet.Controllers
         {
             var userClaims = User.Identity as System.Security.Claims.ClaimsIdentity;
 
+            var result = Request.GetOwinContext().Authentication.AuthenticateAsync("Cookies");
+            string token = result.Result.Properties.Dictionary["access_token"];
+
+            var TokenInfo = new Dictionary<string, string>();
+            var handler = new JwtSecurityTokenHandler();
+            var jwtSecurityToken = handler.ReadJwtToken(token);
+            var claims = jwtSecurityToken.Claims.ToList();
+
+            userClaims.AddClaims(claims);
+
             //You get the user’s first and last name below:
             ViewBag.Name = userClaims?.FindFirst("name")?.Value;
 
@@ -24,6 +38,8 @@ namespace AppModelv2_WebApp_OpenIDConnect_DotNet.Controllers
 
             // TenantId is the unique Tenant Id - which represents an organization in Azure AD
             ViewBag.TenantId = userClaims?.FindFirst("http://schemas.microsoft.com/identity/claims/tenantid")?.Value;
+
+            ViewBag.MFA = ((System.Security.Claims.ClaimsIdentity)System.Security.Claims.ClaimsPrincipal.Current.Identity).HasClaim("amr", "mfa");
 
             return View();
         }
